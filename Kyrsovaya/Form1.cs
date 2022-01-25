@@ -17,7 +17,7 @@ namespace Kyrsovaya
         {
             InitializeComponent();
         }
-
+        MySqlConnection conn;
         private void label1_Click(object sender, EventArgs e)
         {
 
@@ -27,9 +27,9 @@ namespace Kyrsovaya
         {
             listBox1.Items.Clear();
             string selected_id_employee = textBox1.Text;
-            connection.Open();
+            conn.Open();
             string sql = $"SELECT fio_employee, post_employee FROM employees WHERE id_employee={selected_id_employee}";
-            MySqlCommand command = new MySqlCommand(sql, connection);
+            MySqlCommand command = new MySqlCommand(sql, conn);
             try
             {
                 MySqlDataReader reader = command.ExecuteReader();
@@ -59,7 +59,7 @@ namespace Kyrsovaya
             }
             finally
             {
-                connection.Close();
+                conn.Close();
             }
         }
     }

@@ -10,22 +10,51 @@ using MySql.Data.MySqlClient;
 
 namespace CenterData
 {
-    public class DataCenter
+    class ControlData
     {
-        public static MySqlConnection connection = new MySqlConnection("server = caseum.ru; port = 33333; user = st_3_13_19; password = 24572195; database = st_3_13_19");
-        public void OpenConnection()
+        public static string ID = "0";
+        private const string host = "caseum.ru";
+        private const string port = "33333";
+        private const string database = "st_3_10_19";
+        private const string username = "st_3_10_19";
+        private const string password = "73161475";
+        private static readonly MySqlConnection conn = ConnDB();
+        private static readonly MySqlDataAdapter MyDA = new MySqlDataAdapter();
+        private static readonly BindingSource bSource = new BindingSource();
+        private static DataSet ds = new DataSet();
+        private static DataTable table = new DataTable();
+
+
+        public static MySqlConnection ConnDB()
         {
-            if (connection.State == System.Data.ConnectionState.Closed)
-                connection.Open();
+            string connString = $"server={host};port={port};user={username};database={database};password={password};";
+            MySqlConnection conn = new MySqlConnection(connString);
+            return conn;
         }
-        public void CloseConnection()
+
+        public static void DeleteOrders(string id_order)
         {
-            if (connection.State == System.Data.ConnectionState.Open)
-                connection.Close();
+            string sql_delete_order = "DELETE FROM orders WHERE id_order='" + id_order + "'";
+            MySqlCommand delete_order = new MySqlCommand(sql_delete_order, conn);
+            conn.Open();
+            delete_order.ExecuteNonQuery();
+            conn.Close();
         }
-        public MySqlConnection getConnection()
+
+        public static BindingSource GetListOrders()
         {
-            return connection;
+            conn.Open();
+            string commandStr = "SELECT id_order AS 'Номер заказа', date_order AS 'Дата заказа', id_client AS 'ID клиента', sum_order AS 'Сумма заказа (руб.)' FROM orders";
+            MyDA.SelectCommand = new MySqlCommand(commandStr, conn);
+            MyDA.Fill(table);
+            bSource.DataSource = table;
+            conn.Close();
+            return bSource;
+        }
+
+        public static void ReloadList()
+        {
+            table.Clear();
         }
     }
 }
